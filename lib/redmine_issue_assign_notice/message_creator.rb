@@ -2,7 +2,7 @@ module RedmineIssueAssignNotice
   module MessageCreator
 
     def from(url)
-      raise "FROM_METHOD_CALLED URL=#{url}"
+      return AdaptiveCardCreator.new
     end
 
     module_function :from
