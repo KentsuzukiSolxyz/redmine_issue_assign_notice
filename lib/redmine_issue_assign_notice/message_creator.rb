@@ -2,6 +2,7 @@ module RedmineIssueAssignNotice
   module MessageCreator
 
     def from(url)
+      raise "URL=#{url}"
       if url.include? 'slack.com/'
         return TextMessageCreator.new(Formatter::Slack.new)
       end
@@ -37,7 +38,7 @@ module RedmineIssueAssignNotice
         text << "Assign changed from #{@formatter.user_name old_assgined_to} to #{@formatter.user_name new_assgined_to}"
         text << @formatter.change_line
         text << "[#{@formatter.escape issue.project}] "
-        text << @formatter.link("#{issue.tracker} ##{issue.id}", MessageHelper.issue_url(issue))
+        text << @formatter.link("#ためし{issue.tracker} ##{issue.id}", MessageHelper.issue_url(issue))
         text << " #{@formatter.escape issue.subject} (#{@formatter.escape issue.status})"
         text << @formatter.change_line
         text << @formatter.escape(MessageHelper.trimming(note))
