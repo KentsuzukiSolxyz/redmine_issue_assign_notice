@@ -6,7 +6,7 @@ module RedmineIssueAssignNotice
         return TextMessageCreator.new(Formatter::Slack.new)
       end
   
-      if url.include? 'office.com/'
+      if url.include? 'office.com/' || url.include?('powerautomate')
         return AdaptiveCardCreator.new
       end
 
