@@ -45,18 +45,17 @@ module RedmineIssueAssignNotice
 
         mention_id = MessageHelper.mention_target(new_assgined_to, author)
 
-        text << "Assign changed from #{@formatter.user_name old_assgined_to} to #{@formatter.user_name new_assgined_to}"
-        text << @formatter.change_line
         text << @formatter.link("#{issue.tracker} ##{issue.id}", MessageHelper.issue_url(issue))
         text << " #{@formatter.escape issue.subject} (#{@formatter.escape issue.status})"
+        text << @formatter.change_line
 
         if mention_id.present?
           mention_part = "担当者：<at>#{new_assgined_to}</at>"
-          text << @formatter.change_line
+          text << mention_part
+          text << " "
         end
-
-        text << @formatter.change_line
-        text << @formatter.escape(MessageHelper.trimming(note))
+        
+        text << "Assign changed from #{@formatter.user_name old_assgined_to} to #{@formatter.user_name new_assgined_to}"
 
         mention_entities = []
         if mention_id.present?
