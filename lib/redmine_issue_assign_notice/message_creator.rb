@@ -51,7 +51,7 @@ module RedmineIssueAssignNotice
 
         if mention_id.present?
           mention_part = "<at>#{new_assgined_to}</at>"
-          text << "担当者：#{mention_part}</at> "
+          text << "担当者：#{mention_part} "
         end
         
         text << "Assign changed from #{@formatter.user_name old_assgined_to} to #{@formatter.user_name new_assgined_to}"
