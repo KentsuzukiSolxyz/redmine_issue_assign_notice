@@ -2,19 +2,7 @@ module RedmineIssueAssignNotice
   module MessageCreator
 
     def from(url)
-      if url.include? 'slack.com/'
-        return TextMessageCreator.new(Formatter::Slack.new)
-      end
-  
-      if url.include? 'office.com/' || url.include?('powerautomate') || url.include?('webhook.site/')
-        return AdaptiveCardCreator.new
-      end
-
-      if url.include? 'googleapis.com/'
-        return TextMessageCreator.new(Formatter::GoogleChat.new)
-      end
-
-      return TextMessageCreator.new(Formatter::Other.new)
+      raise "FROM_METHOD_CALLED URL=#{url}"
     end
 
     module_function :from
