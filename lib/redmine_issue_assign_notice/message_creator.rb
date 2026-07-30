@@ -44,16 +44,17 @@ module RedmineIssueAssignNotice
         text = ""
 
         mention_id = MessageHelper.mention_target(new_assgined_to, author)
-        if mention_id.present?
-          mention_part = "<at>#{new_assgined_to}</at>"
-          text << mention_part + " "
-        end
 
         text << "Assign changed from #{@formatter.user_name old_assgined_to} to #{@formatter.user_name new_assgined_to}"
         text << @formatter.change_line
-        text << "[#{@formatter.escape issue.project}] "
         text << @formatter.link("#{issue.tracker} ##{issue.id}", MessageHelper.issue_url(issue))
         text << " #{@formatter.escape issue.subject} (#{@formatter.escape issue.status})"
+
+        if mention_id.present?
+          mention_part = "担当者：<at>#{new_assgined_to}</at>"
+          text << @formatter.change_line
+        end
+
         text << @formatter.change_line
         text << @formatter.escape(MessageHelper.trimming(note))
 
@@ -81,7 +82,18 @@ module RedmineIssueAssignNotice
                 :body => [
                   {
                     :type => "TextBlock",
+                    :text => issue.project.to_s,
+                    :weight => "Bolder",
+                    :size => "Medium"
+                  },
+                  {
+                    :type => "TextBlock",
                     :text => text,
+                    :wrap => true
+                  },
+                  {
+                    :type => "TextBlock",
+                    :text => note.to_s,
                     :wrap => true
                   }
                 ],
