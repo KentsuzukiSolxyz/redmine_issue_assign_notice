@@ -90,7 +90,7 @@ module RedmineIssueAssignNotice
         return
       end
 
-      message_creator = MessageCreator_Comment.from(notice_url)
+      message_creator = MessageCreatorComment.from(notice_url)
 
       message = message_creator.create(issue, note, author)
 

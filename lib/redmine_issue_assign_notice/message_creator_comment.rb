@@ -1,13 +1,13 @@
 module RedmineIssueAssignNotice
-  module MessageCreator_Comment
+  module MessageCreatorComment
 
     def from(url)
-      return AdaptiveCardCreator_Comment.new
+      return AdaptiveCardCreatorComment.new
     end
 
     module_function :from
     
-    class AdaptiveCardCreator_Comment
+    class AdaptiveCardCreatorComment
       def initialize()
         @formatter = Formatter::Teams.new
       end
