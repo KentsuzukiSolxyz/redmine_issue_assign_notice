@@ -23,6 +23,8 @@ module RedmineIssueAssignNotice
       def save_from_issue_for_assign_notice
         if not @create_already_fired
           Redmine::Hook.call_hook(:redmine_issue_assign_notice_change, { :issue => self, :journal => self.current_journal}) unless self.current_journal.nil?
+
+          Redmine::Hook.call_hook(:redmine_add_comment, { :issue => self, :journal => self.current_journal}) unless self.current_journal.nil?
         end
         return true
       end

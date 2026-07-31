@@ -16,7 +16,7 @@ module RedmineIssueAssignNotice
         return
       end
 
-      notice(issue, nil, issue.assigned_to, issue.description, issue.author)
+      notice_assign(issue, nil, issue.assigned_to, issue.description, issue.author)
     end
 
     def redmine_issue_assign_notice_change(context={})
@@ -33,12 +33,25 @@ module RedmineIssueAssignNotice
       old_assgined_to = Principal.find_by_id(assign_journal.old_value.to_i) unless assign_journal.old_value.nil?
       new_assgined_to = Principal.find_by_id(assign_journal.value.to_i) unless assign_journal.value.nil?
 
-      notice(issue, old_assgined_to, new_assgined_to, journal.notes, journal.user)
+      notice_assign(issue, old_assgined_to, new_assgined_to, journal.notes, journal.user)
+    end
+
+    def redmine_add_comment(context={})
+      issue = context[:issue]
+      journal = context[:journal]
+
+      Rails.logger.debug "[RedmineIssueAssignNotice] IssueHookListener#redmine_add_comment issue_id:#{issue.id}"
+
+      if journal.notes.blank?
+        return
+      end
+
+      notice_comment(issue, journal.notes, journal.user)
     end
 
     private
 
-    def notice(issue, old_assgined_to, new_assgined_to, note, author)
+    def notice_assign(issue, old_assgined_to, new_assgined_to, note, author)
 
       if Setting.plugin_redmine_issue_assign_notice['notice_url_each_project'] == '1'
         notice_url_field = issue.project.custom_field_values.find{ |field| field.custom_field.name == 'Assign Notice URL' }
@@ -62,5 +75,28 @@ module RedmineIssueAssignNotice
       @client.notice(message, notice_url)
     end
 
+    def notice_comment(issue, note, author)
+
+      if Setting.plugin_redmine_issue_assign_notice['notice_url_each_project'] == '1'
+        notice_url_field = issue.project.custom_field_values.find{ |field| field.custom_field.name == 'Assign Notice URL' }
+        notice_url = notice_url_field.value unless notice_url_field.nil?
+      else
+        notice_url = Setting.plugin_redmine_issue_assign_notice['notice_url']
+      end
+
+      note = '' if Setting.plugin_redmine_issue_assign_notice['disable_sending_content'] == '1'
+
+      if notice_url.blank?
+        return
+      end
+
+      message_creator = MessageCreator_Comment.from(notice_url)
+
+      message = message_creator.create(issue, note, author)
+
+      Rails.logger.debug "[RedmineIssueAssignNotice] IssueHookListener#IssueHookListener#notice_comment:#{message}"
+
+      @client.notice(message, notice_url)
+    end
   end
 end

@@ -1,0 +1,67 @@
+module RedmineIssueAssignNotice
+  module MessageCreator_Comment
+
+    def from(url)
+      return AdaptiveCardCreator_Comment.new
+    end
+
+    module_function :from
+    
+    class AdaptiveCardCreator_Comment
+      def initialize()
+        @formatter = Formatter::Teams.new
+      end
+  
+      def create(issue, note, author)
+
+        note, mention_entities =
+          MessageHelper.extract_mentions(note, author)
+
+        {
+          :type => "message",
+          :attachments => [
+            {
+              :contentType => "application/vnd.microsoft.card.adaptive",
+              :content => {
+                :type => "AdaptiveCard",
+                :body => [
+                  {
+                    :type => "TextBlock",
+                    :text => issue.project.to_s,
+                    :weight => "Bolder",
+                    :size => "Medium"
+                  },
+                  {
+                    :type => "TextBlock",
+                    :text => @formatter.link(
+                      "#{issue.tracker} ##{issue.id} #{@formatter.escape(issue.subject)}",
+                      MessageHelper.issue_url(issue)
+                    ),
+                    :wrap => true
+                  },
+                  {
+                    :type => "TextBlock",
+                    :text => "■コメント",
+                    :weight => "Bolder",
+                    :wrap => true
+                  },
+                  {
+                    :type => "TextBlock",
+                    :text => note.to_s,
+                    :wrap => true
+                  }
+                ],
+                :$schema => "http://adaptivecards.io/schemas/adaptive-card.json",
+                :version => "1.0",
+                :msteams => {
+                  :width => "Full",
+                  :entities => mention_entities
+                }
+              }
+            }
+          ]
+        }
+      end
+    end
+  end
+end
