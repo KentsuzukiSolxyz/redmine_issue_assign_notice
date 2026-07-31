@@ -34,35 +34,36 @@ module RedmineIssueAssignNotice
       end
     end
 
-  def self.extract_mentions(note, author)
-    return ['', []] if note.blank?
+    def self.extract_mentions(note, author)
+      return ['', []] if note.blank?
 
-    mention_entities = []
+      mention_entities = []
 
-    names = note.scan(/@([A-Za-z0-9._-]+)/).flatten
+      names = note.scan(/@([A-Za-z0-9._-]+)/).flatten
 
-    names.each do |name|
-      user = User.find_by_login(name)
+      names.each do |name|
+        user = User.find_by_login(name)
 
-      next if user.nil?
+        next if user.nil?
 
-      mention_id = mention_target(user, author)
-      next if mention_id.blank?
+        mention_id = mention_target(user, author)
+        next if mention_id.blank?
 
-      mention_text = "<at>#{user}</at>"
+        mention_text = "<at>#{user}</at>"
 
-      note.gsub!("@#{name}", mention_text)
+        note.gsub!("@#{name}", mention_text)
 
-      mention_entities << {
-        :type => "mention",
-        :text => mention_text,
-        :mentioned => {
-          :id => mention_id,
-          :name => user.to_s
+        mention_entities << {
+          :type => "mention",
+          :text => mention_text,
+          :mentioned => {
+            :id => mention_id,
+            :name => user.to_s
+          }
         }
-      }
-    end
+      end
 
-    [note, mention_entities]
+      [note, mention_entities]
+    end
   end
 end
