@@ -41,7 +41,7 @@ module RedmineIssueAssignNotice
                   },
                   {
                     :type => "TextBlock",
-                    :text => "■コメント",
+                    :text => "【コメント・#{author.name}】",
                     :weight => "Bolder",
                     :wrap => true
                   },
